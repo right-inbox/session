@@ -77,6 +77,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
  * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
+ * @param {Function} [options.sessionid] Manually set session ID
  * @param {String|Array} [options.secret] Secret for signing session ID
  * @param {Object} [options.store=MemoryStore] Session store
  * @param {String} [options.unset]
@@ -217,8 +218,8 @@ function session(options) {
     // expose store
     req.sessionStore = store;
 
-    // get the session ID from the cookie
-    var cookieId = req.sessionID = getcookie(req, name, secrets);
+    // get the session ID from the cookie or from a request content via options.sessionid if provided
+    var cookieId = req.sessionID = options.sessionid ? options.sessionid(req) : getcookie(req, name, secrets);
 
     // set-cookie
     onHeaders(res, function(){
